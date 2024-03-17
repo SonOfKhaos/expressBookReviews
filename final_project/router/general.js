@@ -47,19 +47,30 @@ public_users.get('/isbn/:isbn',async function (req, res) {
 });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author', async function (req, res) {
   const authorName = req.params.author;
-  const filteredBooks = Object.values(books).filter(
-    (b) => b.author === authorName
-  );
-  res.send(JSON.stringify(filteredBooks));
-  return res.status(200).json({message: "Book with Author " + author + " successfully retrieved"});
+  const promise3 = new Promise((resolve, reject) => {
+    setInterval(() => {
+        const filteredBooks = Object.values(books).filter(
+            (b) => b.author === authorName
+          );
+        return resolve(filteredBooks);
+    }, 500);
+  });
+
+  const filteredTitle = await promise3;
+
+  if(filteredBooks.length > 0) {
+    return res.status(200).json({ books: filteredBooks});
+  } else {
+    return res.status(404).json({message :"Book not Found"});
+  }
 });
 
 // Get all books based on title
 public_users.get('/title/:title',async function (req, res) {
   const titleName = req.params.title;
-  const promise3 = new Promise((resolve, reject) => {
+  const promise4 = new Promise((resolve, reject) => {
     setInterval(() => {
         const filteredTitle = Object.values(books).filter(
             (t) => t.title === titleName
@@ -68,7 +79,7 @@ public_users.get('/title/:title',async function (req, res) {
     }, 500);
   });
 
-  const filteredTitle = await promise3;
+  const filteredTitle = await promise4;
 
   if(filteredTitle.length > 0) {
     return res.status(200).json({ books: filteredTitle});
